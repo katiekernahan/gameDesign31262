@@ -1,0 +1,3 @@
+-Camera do not follow when player jumps
+-Sorting layers
+	-Player controller access sorting layer and dynamically change on position
