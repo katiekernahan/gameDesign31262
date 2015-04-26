@@ -1,3 +1,6 @@
--Camera do not follow when player jumps
--Sorting layers
+Rules   - Person who adds the item put your name with it
+	- Whoever fixes it put (FIXED) in front but do delete
+
+Adam -Camera do not follow when player jumps
+Adam -Sorting layers
 	-Player controller access sorting layer and dynamically change on position
