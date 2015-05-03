@@ -10,6 +10,9 @@ public class playerController : MonoBehaviour {
 	private float _distanceFromGround = 0.0f;
 	private Vector3 currentPosition;
 	private bool _jumpingUp = false;
+	private bool _slidingLeft = false;
+	private bool _slidingRight = false;
+	private float _distanceFromOriginSlide = 0.0f;
 	
 	
 	void Start () {
@@ -37,12 +40,27 @@ public class playerController : MonoBehaviour {
 			}
 		}
 	}
+
 	
 	// Update is called once per frame
 	void Update () {
 		
 		currentPosition = transform.position;
-		float move = Input.GetAxisRaw("Horizontal");
+		//float move = Input.GetAxisRaw("Horizontal");
+		float move = 0;
+
+
+		if(Input.GetKeyDown("left")){
+			//move = -5;
+			//slideLeft();
+			_slidingLeft = true;
+		}
+
+		if(Input.GetKeyDown("right")){
+			_slidingRight = true;
+			//slideRight();
+		}
+
 		
 		if (Input.GetKeyDown ("space")) {
 			Debug.Log ("Space hit");
@@ -53,18 +71,40 @@ public class playerController : MonoBehaviour {
 		if (_jumping) {
 			jump ();
 		}
-		
+
 		float xMovement = 0.1732050808F/2;   //isometrix values
 		float yMovement = 0.1F/2; 
-		
-		xMovement += move * 0.5f / 2;
-		yMovement -= move * 0.5f / 2;
-		
-		
-		
-		currentPosition.x += xMovement*Time.timeScale;
-		currentPosition.y += yMovement*Time.timeScale;
-		
+
+		Debug.Log ("Check");
+		if (_slidingLeft) {
+			if(_distanceFromOriginSlide < 5){
+				move -= 0.5f;
+				_distanceFromOriginSlide += 0.5f;
+			}
+			else{
+				_slidingLeft = false;
+				_distanceFromOriginSlide = 0;
+			}
+		} 
+		else if (_slidingRight) {
+			if(_distanceFromOriginSlide < 5){
+				move += 0.5f;
+				_distanceFromOriginSlide += 0.5f;
+			}
+			else {
+				_slidingRight = false;
+				_distanceFromOriginSlide = 0;
+			}
+		} 
+
+			xMovement += move * 0.5f / 2;
+			yMovement -= move * 0.5f / 2;
+			
+			
+			
+			currentPosition.x += xMovement * Time.timeScale;
+			currentPosition.y += yMovement * Time.timeScale;
+
 		
 		transform.position = currentPosition;
 		
@@ -76,14 +116,15 @@ public class playerController : MonoBehaviour {
 	
 	void OnTriggerEnter2D( Collider2D other )
 	{
-		if (other.gameObject.name == "fastCubeCollider"){
+		if (other.gameObject.name == "fastCubeCollider") {
 			Time.timeScale = 2;
 			Object.Destroy (other.gameObject, 0.0F);
-			Object.Destroy (GameObject.Find("fastCube"));
-			GetComponent<Animator>().SetBool( "runningFast", true );
+			Object.Destroy (GameObject.Find ("fastCube"));
+			GetComponent<Animator> ().SetBool ("runningFast", true);
+		} else if (!(other.gameObject.name == "realHole" && _jumping)){
+			Application.LoadLevel ("beforeTest");
 		}
-		else
-			Application.LoadLevel("beforeTest");
+
 		
 	}
 	
