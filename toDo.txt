@@ -4,3 +4,6 @@ Rules   - Person who adds the item put your name with it
 Adam -Camera do not follow when player jumps
 Adam -Sorting layers
 	-Player controller access sorting layer and dynamically change on position
+	- Sort Grid System
+	-Tweak Jump
+	-
