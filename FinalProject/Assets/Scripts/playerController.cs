@@ -3,6 +3,9 @@ using System.Collections;
 
 public class playerController : MonoBehaviour {
 
+	//LEVEL ON
+	static public int level = 1;
+
 	//SUPERPOWERS
 	private float runningSpeed = 1.0f;
 	private bool _flying = false;
@@ -199,7 +202,13 @@ public class playerController : MonoBehaviour {
 			//reload the level because there was a crash
 			//Nested If statement because I can
 			if(!_isHulk)
-				Application.LoadLevel ("beforeTest");
+			{
+				runningSpeed = 0.0f;
+				Time.timeScale = 0.0f;
+
+				transform.gameObject.AddComponent<RetryController>();
+			}
+				//Application.LoadLevel ("beforeTest");
 		}
 
 		

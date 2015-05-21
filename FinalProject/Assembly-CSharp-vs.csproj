@@ -46,11 +46,13 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\RetryController.cs" />
      <Compile Include="Assets\Scripts\backgroundController.cs" />
      <Compile Include="Assets\Scripts\cameraController.cs" />
      <Compile Include="Assets\Scripts\colliderController.cs" />
      <Compile Include="Assets\Scripts\cubeCreator.cs" />
      <Compile Include="Assets\Scripts\cubeFactory.cs" />
+     <Compile Include="Assets\Scripts\loadingController.cs" />
      <Compile Include="Assets\Scripts\playerController.cs" />
      <Compile Include="Assets\Scripts\wallsController.cs" />
  <Reference Include="UnityEngine.UI">
