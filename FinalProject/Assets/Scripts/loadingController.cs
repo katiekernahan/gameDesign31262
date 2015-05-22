@@ -21,9 +21,34 @@ public class loadingController : MonoBehaviour {
 	
 	}
 
-	public void LoadLevel(){
+	public void StartNewGame(){
 		//Debug.Log ("Level is:" + level);
 		Debug.Log ("Hit");
 		Application.LoadLevel ("Level1");
+	}
+
+	public void loadLevelSelect(){
+		Application.LoadLevel ("LevelSelect");
+	}
+
+
+	public void loadLevel1(){
+		Application.LoadLevel ("Level1");
+	}
+
+	public void loadLevel2(){
+		Application.LoadLevel ("Level2");
+	}
+
+	public void loadLevel3(){
+		Application.LoadLevel ("Level3");
+	}
+
+	public void loadLevel4(){
+		Application.LoadLevel ("Level4");
+	}
+
+	public void loadLevel5(){
+		Application.LoadLevel ("Level5");
 	}
 }
