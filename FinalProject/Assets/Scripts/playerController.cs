@@ -20,7 +20,7 @@ public class playerController : MonoBehaviour {
 	//Movement
 	private float fractionMovement = 1.0f;
 	private Rigidbody2D _myRigidBody;
-	private bool _jumping;
+	private bool _jumping = false;
 	private float _distanceFromGround = 0.0f;
 	private Vector3 currentPosition;
 	private bool _jumpingUp = false;
@@ -37,20 +37,34 @@ public class playerController : MonoBehaviour {
 	private GameObject playerCollider;
 	private Vector3 playerColliderPosition;
 
+	//Camera
+	private GameObject camera;
+	private Vector3 cameraPosition;
+
 	//Mechanim
 	private Animator animator;
 
 
 	
 	void Start () {
+		Debug.Log ("Level is: " + Application.loadedLevelName);
+		string levelName = Application.loadedLevelName;
+		//ASCII value
+		int levelIs = (levelName [levelName.Length - 1]) - 48;
+		Debug.Log ("Level is: " + levelIs);
+		level = levelIs;
+	
+
 		Time.timeScale = 1.0F;
+
+		animator = GetComponent<Animator> ();
+		animator.SetInteger("level", level);
 
 		_myRigidBody = GetComponent<Rigidbody2D>();
 		shadow = GameObject.Find ("shadow");
 		playerCollider = GameObject.Find ("playerCollider");
 		sprite = GetComponent<SpriteRenderer>();
-		animator = GetComponent<Animator>();
-
+		camera = GameObject.Find ("Main Camera");
 	}
 	
 	
@@ -178,28 +192,38 @@ public class playerController : MonoBehaviour {
 	void FixedUpdate(){
 		//reserved for non rigid/movement operations - this is independent of timescale
 	}
-	
-	void OnTriggerEnter2D( Collider2D other )
+
+	//Using Stay instead of enter to detect jumping
+	void OnTriggerStay2D( Collider2D other )
 	{
 		Debug.Log (other.gameObject.name);
 		//if powerUp
 
-		if (other.transform.parent.gameObject.name.StartsWith("power")) {
-			switch(other.gameObject.name)
-			{
-				case "fastPowerUp" :StartCoroutine(RunningFast ());
-									break;
-				case "hulkPowerUp" : StartCoroutine(HulkSmash()); 
-				 					 break;
-				case "flyingPowerUp" : StartCoroutine(Flying()); 
-									   break;
-				default: Debug.Log ("No powerup with this name"); break;
+		if (other.gameObject.name == "endLevelCollider") {
+			Debug.Log ("Load Next Level");
+			StartCoroutine (LoadNextLevel ());
+		}
+		else if (other.transform.parent.gameObject.name.StartsWith ("power")) {
+			switch (other.gameObject.name) {
+			case "fastPowerUp":
+				StartCoroutine (RunningFast ());
+				break;
+			case "hulkPowerUp":
+				StartCoroutine (HulkSmash ()); 
+				break;
+			case "flyingPowerUp":
+				StartCoroutine (Flying ()); 
+				break;
+			default:
+				Debug.Log ("No powerup with this name");
+				break;
 			}
 			Object.Destroy (other.transform.parent.gameObject, 0.0F);
 
-		} 
+		}
 		else if (!(other.gameObject.name == "hole" && (_jumping || _flying))){
-			//reload the level because there was a crash
+			//reload the level because there was a crashe
+
 			//Nested If statement because I can
 			if(!_isHulk)
 			{
@@ -210,7 +234,7 @@ public class playerController : MonoBehaviour {
 			}
 				//Application.LoadLevel ("beforeTest");
 		}
-
+		Debug.Log ("Must be jumping: " + _jumping);
 		
 	}
 
@@ -238,6 +262,12 @@ public class playerController : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("flying", false);
 	}
 
+	public IEnumerator LoadNextLevel(){
+		transform.DetachChildren ();
+		yield return new WaitForSeconds(3f); // waits 2 seconds
+		Debug.Log ("Level was: " + level);
+		Application.LoadLevel ("Level" + (level + 1));
+	}
 	
 	
 }

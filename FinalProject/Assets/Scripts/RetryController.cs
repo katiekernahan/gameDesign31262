@@ -4,10 +4,21 @@ using System.Collections;
 
 public class RetryController : MonoBehaviour
 {
+	private GameObject player;
+	private int level;
+
+	void Start()
+	{
+		player = GameObject.Find ("player");
+		//playerController pc = player.GetComponent <playerController> ();
+		level = playerController.level;
+		Debug.Log ("Level is: " + level);
+	}
+
 	void Update()
 	{
 		if (Input.GetKeyDown ("space")) {
-			Application.LoadLevel("Level1");
+			Application.LoadLevel("Level" + level );
 		}
 	}
 
@@ -30,7 +41,7 @@ public class RetryController : MonoBehaviour
 			)
 		{
 			// Reload the level
-			Application.LoadLevel("Level1");
+			Application.LoadLevel("Level" + level);
 		}
 		
 		if (
