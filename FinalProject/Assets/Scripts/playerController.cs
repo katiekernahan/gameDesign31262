@@ -44,6 +44,8 @@ public class playerController : MonoBehaviour {
 	//Mechanim
 	private Animator animator;
 
+	public GameObject explosion;
+
 
 	
 	void Start () {
@@ -53,12 +55,10 @@ public class playerController : MonoBehaviour {
 		int levelIs = (levelName [levelName.Length - 1]) - 48;
 		Debug.Log ("Level is: " + levelIs);
 		level = levelIs;
-	
+
+		explosion = GameObject.Find ("explosion");
 
 		Time.timeScale = 1.0F;
-
-		animator = GetComponent<Animator> ();
-		animator.SetInteger("level", level);
 
 		_myRigidBody = GetComponent<Rigidbody2D>();
 		shadow = GameObject.Find ("shadow");
@@ -99,7 +99,6 @@ public class playerController : MonoBehaviour {
 			if (_distanceFromGround < 0){
 				GetComponent<Animator> ().SetBool ("jumping", false);
 				_jumping = false;
-				animator.SetBool("jumping", false);
 			}
 		}
 		shadow.transform.position = shadowPosition;
@@ -143,7 +142,7 @@ public class playerController : MonoBehaviour {
 
 				_jumping = true;
 				_jumpingUp = true;
-				animator.SetBool("jumping", true);
+				GetComponent<Animator> ().SetBool ("jumping", true);
 			}
 		}
 
@@ -211,7 +210,7 @@ public class playerController : MonoBehaviour {
 			case "hulkPowerUp":
 				StartCoroutine (HulkSmash ()); 
 				break;
-			case "flyingPowerUp":
+			case "superManPowerUp":
 				StartCoroutine (Flying ()); 
 				break;
 			default:
@@ -225,12 +224,27 @@ public class playerController : MonoBehaviour {
 			//reload the level because there was a crashe
 
 			//Nested If statement because I can
-			if(!_isHulk)
+			if(!_isHulk && !_flying)
 			{
 				runningSpeed = 0.0f;
 				Time.timeScale = 0.0f;
 
+
+
 				transform.gameObject.AddComponent<RetryController>();
+			}
+			else if(_isHulk){
+				Debug.Log ("Explode Item!");
+				Object.Destroy (other.gameObject, 0.0F);
+				Object.Destroy (other.transform.parent.gameObject, 0.0F);
+				//GameObject explosion = new GameObject("Explosion");
+				//explosion.transform.position = transform.position;
+
+				GameObject expl = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject; // destroy the grenade
+				Destroy(expl, 1); // delete the explosion after 3 seconds
+			}
+			else{
+				//isflying
 			}
 				//Application.LoadLevel ("beforeTest");
 		}
@@ -239,6 +253,7 @@ public class playerController : MonoBehaviour {
 	}
 
 	public IEnumerator RunningFast(){
+		//should be using an animator object instead of always referencing
 		GetComponent<Animator> ().SetBool ("fast", true);	
 		runningSpeed = 2.0f;
 		yield return new WaitForSeconds(3f); // waits 2 seconds
@@ -248,6 +263,7 @@ public class playerController : MonoBehaviour {
 
 	public IEnumerator HulkSmash(){
 		_isHulk = true;
+		Debug.Log ("Hulk smash");
 		GetComponent<Animator> ().SetBool ("hulk", true);
 		yield return new WaitForSeconds(3f); // waits 2 seconds
 		_isHulk = false;
@@ -257,7 +273,7 @@ public class playerController : MonoBehaviour {
 	public IEnumerator Flying(){
 		_flying = true;
 		GetComponent<Animator> ().SetBool ("flying", true);
-		yield return new WaitForSeconds(3f); // waits 2 seconds
+		yield return new WaitForSeconds(5f); // waits 2 seconds
 		_flying = false;
 		GetComponent<Animator> ().SetBool ("flying", false);
 	}
