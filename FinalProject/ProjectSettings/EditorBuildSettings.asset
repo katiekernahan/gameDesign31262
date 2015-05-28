@@ -5,14 +5,8 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/beforeTest.unity
-  - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-  - enabled: 1
-    path: Assets/Scenes/LevelSelect.unity
-  - enabled: 1
-    path: Assets/Scenes/Level5.unity
   - enabled: 1
     path: Assets/Scenes/Level1.unity
   - enabled: 1
@@ -22,4 +16,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level4.unity
   - enabled: 1
-    path: Assets/Sprites/meltdown.unity
+    path: Assets/Scenes/Level5.unity
+  - enabled: 1
+    path: Assets/Scenes/LevelSelect.unity
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+  - enabled: 1
+    path: Assets/Scenes/testMovement.unity
+  - enabled: 1
+    path: Assets/Scenes/meltdown.unity

@@ -2,28 +2,28 @@ using UnityEngine;
 using System.Collections;
 
 public class playerController : MonoBehaviour {
-
+	
 	//LEVEL ON
 	static public int level = 1;
-
+	
 	//Paused
 	bool _paused;
-
+	
 	//Data Hook
 	int retryCount = 0;
 	int currentlevel = 1;
-
+	
 	//SUPERPOWERS
 	private float runningSpeed = 1.0f;
 	private bool _flying = false;
 	private bool _isHulk = false;
-
+	
 	private float isometricAngle =  Mathf.Tan ((26.5f * Mathf.PI)/180);
-
+	
 	//Sorting Order
 	public int sortingOrder = 6;
 	private SpriteRenderer sprite;
-
+	
 	//Movement
 	private float fractionMovement = 1.0f;
 	private Rigidbody2D _myRigidBody;
@@ -34,26 +34,28 @@ public class playerController : MonoBehaviour {
 	private bool _slidingLeft = false;
 	private bool _slidingRight = false;
 	private float _distanceFromOriginSlide = 0.0f;
-
+	
 	//Shadow
 	private GameObject shadow;
 	private Vector3 shadowPosition;
 	private Vector3 shadowScale;
-
+	
 	//Player Collider
 	private GameObject playerCollider;
 	private Vector3 playerColliderPosition;
-
+	
 	//Camera
 	private GameObject camera;
 	private Vector3 cameraPosition;
-
+	
 	//Mechanim
 	private Animator animator;
-
+	
 	public GameObject explosion;
 
-
+	private AudioSource audio;
+	
+	
 	
 	void Start () {
 		Debug.Log ("Level is: " + Application.loadedLevelName);
@@ -62,23 +64,25 @@ public class playerController : MonoBehaviour {
 		int levelIs = (levelName [levelName.Length - 1]) - 48;
 		Debug.Log ("Level is: " + levelIs);
 		level = levelIs;
-
+		
 		explosion = GameObject.Find ("explosion");
-
+		
 		Time.timeScale = 1.0F;
-
+		
 		_myRigidBody = GetComponent<Rigidbody2D>();
 		shadow = GameObject.Find ("shadow");
+
 		playerCollider = GameObject.Find ("playerCollider");
 		sprite = GetComponent<SpriteRenderer>();
 		camera = GameObject.Find ("Main Camera");
-
+		audio = GetComponent<AudioSource>();
+		Debug.Log ("Found it with tag: " + camera.tag);
 		//run level start
 		//Time.timeScale = 0.0f;
 		//pause and then re do
 		//Time.timeScale = 1.0f;
 		StartCoroutine (startOfLevel ()); 
-
+		
 	}
 	
 	
@@ -90,9 +94,9 @@ public class playerController : MonoBehaviour {
 			shadowPosition.y -= 0.1F;
 			shadowScale.y -= 0.02F;
 			shadowScale.x -= 0.02F;
-
+			
 			playerColliderPosition.y -= 0.1F;
-
+			
 			currentPosition.y += 0.1F; 
 			_distanceFromGround += 0.1F;
 			transform.localScale += new Vector3(0.01F,0.01F,0);
@@ -104,9 +108,9 @@ public class playerController : MonoBehaviour {
 			shadowPosition.y += 0.1F;
 			shadowScale.y += 0.02F;
 			shadowScale.x += 0.02F;
-
+			
 			playerColliderPosition.y += 0.1F;
-
+			
 			currentPosition.y -= 0.1F;
 			_distanceFromGround -= 0.1F;
 			transform.localScale += new Vector3(-0.01F,-0.01F,0);
@@ -120,18 +124,18 @@ public class playerController : MonoBehaviour {
 		shadow.transform.localScale = shadowScale;
 		playerCollider.transform.position = playerColliderPosition;
 	}
-
+	
 	
 	// Update is called once per frame
 	void Update () {
-
+		
 		if (!_paused) {
-
+			
 			currentPosition = transform.position;
-
+			
 			float move = 0;
-
-
+			
+			
 			if (Input.GetKeyDown ("left") && !_jumping) {
 				//move = -5;
 				//slideLeft();
@@ -141,9 +145,9 @@ public class playerController : MonoBehaviour {
 					sprite.sortingOrder--;
 				}
 			}
-
+			
 			if (Input.GetKeyDown ("right") && !_jumping) {
-
+				
 				if (sortingOrder != 0 && !_slidingLeft && !_slidingRight) {
 					_slidingRight = true;
 					sprite.sortingOrder++;
@@ -151,23 +155,23 @@ public class playerController : MonoBehaviour {
 				}
 				//slideRight();
 			}
-
+			
 			
 			if (Input.GetKeyDown ("space")) {
 				Debug.Log ("Space hit");
 				if (!_jumping) {
-
+					audio.Play ();
 					_jumping = true;
 					_jumpingUp = true;
 					GetComponent<Animator> ().SetBool ("jumping", true);
 				}
 			}
-
+			
 			if (_jumping) {
 				jump ();
 			}
-
-
+			
+			
 			float xMovement = 1 * runningSpeed / 10;
 			float yMovement = isometricAngle * 1.003f * runningSpeed / 10;
 			
@@ -188,15 +192,15 @@ public class playerController : MonoBehaviour {
 					_distanceFromOriginSlide = 0;
 				}
 			} 
-
+			
 			xMovement += move * 0.5f / 2;
 			yMovement -= move * 0.5f / 2;
-				
-				
-				
+			
+			
+			
 			currentPosition.x += xMovement * Time.timeScale;
 			currentPosition.y += yMovement * Time.timeScale;
-
+			
 			
 			transform.position = currentPosition;
 		}
@@ -205,13 +209,13 @@ public class playerController : MonoBehaviour {
 	void FixedUpdate(){
 		//reserved for non rigid/movement operations - this is independent of timescale
 	}
-
+	
 	//Using Stay instead of enter to detect jumping
 	void OnTriggerStay2D( Collider2D other )
 	{
 		Debug.Log (other.gameObject.name);
 		//if powerUp
-
+		
 		if (other.gameObject.name == "endLevelCollider") {
 			Debug.Log ("Load Next Level");
 			StartCoroutine (LoadNextLevel ());
@@ -232,18 +236,21 @@ public class playerController : MonoBehaviour {
 				break;
 			}
 			Object.Destroy (other.transform.parent.gameObject, 0.0F);
-
+			
 		}
 		else if (!(other.gameObject.name == "hole" && (_jumping || _flying))){
 			//reload the level because there was a crashe
-
+			
 			//Nested If statement because I can
 			if(!_isHulk && !_flying)
 			{
 				runningSpeed = 0.0f;
 				Time.timeScale = 0.0f;
 
-
+				AudioSource asource = other.transform.parent.gameObject.GetComponent<AudioSource>();
+				asource.Play ();
+				AudioSource bsource = camera.GetComponent<AudioSource>();
+				bsource.Pause ();
 
 				transform.gameObject.AddComponent<RetryController>();
 			}
@@ -253,19 +260,19 @@ public class playerController : MonoBehaviour {
 				Object.Destroy (other.transform.parent.gameObject, 0.0F);
 				//GameObject explosion = new GameObject("Explosion");
 				//explosion.transform.position = transform.position;
-
+				
 				GameObject expl = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject; // destroy the grenade
 				Destroy(expl, 1); // delete the explosion after 3 seconds
 			}
 			else{
 				//isflying
 			}
-				//Application.LoadLevel ("beforeTest");
+			//Application.LoadLevel ("beforeTest");
 		}
 		Debug.Log ("Must be jumping: " + _jumping);
 		
 	}
-
+	
 	public IEnumerator RunningFast(){
 		//should be using an animator object instead of always referencing
 		GetComponent<Animator> ().SetBool ("fast", true);	
@@ -281,7 +288,7 @@ public class playerController : MonoBehaviour {
 		runningSpeed = 1.0f;
 		GetComponent<Animator> ().SetBool ("fast", false);
 	}
-
+	
 	public IEnumerator HulkSmash(){
 		_isHulk = true;
 		Debug.Log ("Hulk smash");
@@ -298,7 +305,7 @@ public class playerController : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("hulk", false);
 		_isHulk = false;
 	}
-
+	
 	public IEnumerator Flying(){
 		_flying = true;
 		GetComponent<Animator> ().SetBool ("flying", true);
@@ -313,22 +320,22 @@ public class playerController : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("flying", false);
 		_flying = false;
 	}
-
+	
 	public IEnumerator LoadNextLevel(){
 		transform.DetachChildren ();
 		yield return new WaitForSeconds(3f); // waits 2 seconds
 		Debug.Log ("Level was: " + level);
 		Application.LoadLevel ("Level" + (level + 1));
 	}
-
+	
 	public IEnumerator startOfLevel(){
 		Time prevTime;
 		//But time scale is 0 so 3 seconds will never happen!
-
+		
 		_paused = true;
 		yield return new WaitForSeconds (1.5f);
 		_paused = false;
-
+		
 	}
 	
 	
