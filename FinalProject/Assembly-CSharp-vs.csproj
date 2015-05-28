@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\RetryController.cs" />
      <Compile Include="Assets\Scripts\loadingController.cs" />
+     <Compile Include="Assets\Scripts\meltDownController.cs" />
      <Compile Include="Assets\Scripts\playerController.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

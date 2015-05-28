@@ -6,6 +6,13 @@ public class playerController : MonoBehaviour {
 	//LEVEL ON
 	static public int level = 1;
 
+	//Paused
+	bool _paused;
+
+	//Data Hook
+	int retryCount = 0;
+	int currentlevel = 1;
+
 	//SUPERPOWERS
 	private float runningSpeed = 1.0f;
 	private bool _flying = false;
@@ -65,6 +72,13 @@ public class playerController : MonoBehaviour {
 		playerCollider = GameObject.Find ("playerCollider");
 		sprite = GetComponent<SpriteRenderer>();
 		camera = GameObject.Find ("Main Camera");
+
+		//run level start
+		//Time.timeScale = 0.0f;
+		//pause and then re do
+		//Time.timeScale = 1.0f;
+		StartCoroutine (startOfLevel ()); 
+
 	}
 	
 	
@@ -96,8 +110,9 @@ public class playerController : MonoBehaviour {
 			currentPosition.y -= 0.1F;
 			_distanceFromGround -= 0.1F;
 			transform.localScale += new Vector3(-0.01F,-0.01F,0);
-			if (_distanceFromGround < 0){
+			if(_distanceFromGround < 1)
 				GetComponent<Animator> ().SetBool ("jumping", false);
+			if (_distanceFromGround < 0){
 				_jumping = false;
 			}
 		}
@@ -110,82 +125,81 @@ public class playerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		currentPosition = transform.position;
+		if (!_paused) {
 
-		float move = 0;
+			currentPosition = transform.position;
+
+			float move = 0;
 
 
-		if(Input.GetKeyDown("left") && !_jumping){
-			//move = -5;
-			//slideLeft();
-			if(sortingOrder != 7 && !_slidingRight && !_slidingLeft){
-				_slidingLeft = true;
-				sortingOrder++;
-				sprite.sortingOrder--;
+			if (Input.GetKeyDown ("left") && !_jumping) {
+				//move = -5;
+				//slideLeft();
+				if (sortingOrder != 7 && !_slidingRight && !_slidingLeft) {
+					_slidingLeft = true;
+					sortingOrder++;
+					sprite.sortingOrder--;
+				}
 			}
-		}
 
-		if(Input.GetKeyDown("right") && !_jumping){
+			if (Input.GetKeyDown ("right") && !_jumping) {
 
-			if(sortingOrder != 0 && !_slidingLeft && !_slidingRight){
-				_slidingRight = true;
-				sprite.sortingOrder++;
-				sortingOrder--;
+				if (sortingOrder != 0 && !_slidingLeft && !_slidingRight) {
+					_slidingRight = true;
+					sprite.sortingOrder++;
+					sortingOrder--;
+				}
+				//slideRight();
 			}
-			//slideRight();
-		}
 
-		
-		if (Input.GetKeyDown ("space")) {
-			Debug.Log ("Space hit");
-			if(!_jumping){
+			
+			if (Input.GetKeyDown ("space")) {
+				Debug.Log ("Space hit");
+				if (!_jumping) {
 
-				_jumping = true;
-				_jumpingUp = true;
-				GetComponent<Animator> ().SetBool ("jumping", true);
+					_jumping = true;
+					_jumpingUp = true;
+					GetComponent<Animator> ().SetBool ("jumping", true);
+				}
 			}
-		}
 
-		if (_jumping) {
-			jump ();
-		}
+			if (_jumping) {
+				jump ();
+			}
 
 
-		float xMovement = 1 * runningSpeed/10;
-		float yMovement = isometricAngle * 1.003f * runningSpeed/10;
-		
-		if (_slidingLeft) {
-			if(_distanceFromOriginSlide < 4.2f){ //fraction to move in between lines
-				move -= 0.5f;
-				_distanceFromOriginSlide += 0.5f; 
-			}
-			else{
-				_slidingLeft = false;
-				_distanceFromOriginSlide = 0;
-			}
-		} 
-		else if (_slidingRight) {
-			if(_distanceFromOriginSlide < 4.2f){
-				move += 0.5f;
-				_distanceFromOriginSlide += 0.5f;
-			}
-			else {
-				_slidingRight = false;
-				_distanceFromOriginSlide = 0;
-			}
-		} 
+			float xMovement = 1 * runningSpeed / 10;
+			float yMovement = isometricAngle * 1.003f * runningSpeed / 10;
+			
+			if (_slidingLeft) {
+				if (_distanceFromOriginSlide < 4.2f) { //fraction to move in between lines
+					move -= 0.5f;
+					_distanceFromOriginSlide += 0.5f; 
+				} else {
+					_slidingLeft = false;
+					_distanceFromOriginSlide = 0;
+				}
+			} else if (_slidingRight) {
+				if (_distanceFromOriginSlide < 4.2f) {
+					move += 0.5f;
+					_distanceFromOriginSlide += 0.5f;
+				} else {
+					_slidingRight = false;
+					_distanceFromOriginSlide = 0;
+				}
+			} 
 
 			xMovement += move * 0.5f / 2;
 			yMovement -= move * 0.5f / 2;
-			
-			
-			
-			currentPosition.x += xMovement;
-			currentPosition.y += yMovement;
+				
+				
+				
+			currentPosition.x += xMovement * Time.timeScale;
+			currentPosition.y += yMovement * Time.timeScale;
 
-		
-		transform.position = currentPosition;
-		
+			
+			transform.position = currentPosition;
+		}
 	}
 	
 	void FixedUpdate(){
@@ -257,6 +271,13 @@ public class playerController : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("fast", true);	
 		runningSpeed = 2.0f;
 		yield return new WaitForSeconds(3f); // waits 2 seconds
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("fast", true);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("fast", false);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("fast", true);
+		yield return new WaitForSeconds(0.2f);
 		runningSpeed = 1.0f;
 		GetComponent<Animator> ().SetBool ("fast", false);
 	}
@@ -266,16 +287,31 @@ public class playerController : MonoBehaviour {
 		Debug.Log ("Hulk smash");
 		GetComponent<Animator> ().SetBool ("hulk", true);
 		yield return new WaitForSeconds(3f); // waits 2 seconds
-		_isHulk = false;
 		GetComponent<Animator> ().SetBool ("hulk", false);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("hulk", true);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("hulk", false);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("hulk", true);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("hulk", false);
+		_isHulk = false;
 	}
 
 	public IEnumerator Flying(){
 		_flying = true;
 		GetComponent<Animator> ().SetBool ("flying", true);
 		yield return new WaitForSeconds(5f); // waits 2 seconds
-		_flying = false;
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("flying", true);
+		yield return new WaitForSeconds(0.2f);
 		GetComponent<Animator> ().SetBool ("flying", false);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("flying", true);
+		yield return new WaitForSeconds(0.2f);
+		GetComponent<Animator> ().SetBool ("flying", false);
+		_flying = false;
 	}
 
 	public IEnumerator LoadNextLevel(){
@@ -283,6 +319,16 @@ public class playerController : MonoBehaviour {
 		yield return new WaitForSeconds(3f); // waits 2 seconds
 		Debug.Log ("Level was: " + level);
 		Application.LoadLevel ("Level" + (level + 1));
+	}
+
+	public IEnumerator startOfLevel(){
+		Time prevTime;
+		//But time scale is 0 so 3 seconds will never happen!
+
+		_paused = true;
+		yield return new WaitForSeconds (1.5f);
+		_paused = false;
+
 	}
 	
 	

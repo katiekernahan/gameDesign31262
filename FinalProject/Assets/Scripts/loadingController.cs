@@ -24,7 +24,7 @@ public class loadingController : MonoBehaviour {
 	public void StartNewGame(){
 		//Debug.Log ("Level is:" + level);
 		Debug.Log ("Hit");
-		Application.LoadLevel ("Level1");
+		Application.LoadLevel ("meltdown");
 	}
 
 	public void loadLevelSelect(){

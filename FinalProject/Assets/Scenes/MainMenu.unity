@@ -215,7 +215,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: 168.800003, y: 77.6999969}
+  m_AnchoredPosition: {x: 140, y: 33}
   m_SizeDelta: {x: 500, y: 60}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &1143588452
@@ -243,7 +243,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: NUKA DASH
+  m_Text: NUka        dash
 --- !u!222 &1143588453
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -397,7 +397,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: 3, y: 37.7000008}
+  m_AnchoredPosition: {x: 3, y: 43}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &1414485266
@@ -413,7 +413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Sprite: {fileID: 21300000, guid: 79963ce7e8eeebb4eacff735a345e44a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b632baaf08bbb8a4594048e18f94d9c6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
